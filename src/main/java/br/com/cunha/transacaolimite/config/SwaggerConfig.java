@@ -32,8 +32,8 @@ public class SwaggerConfig {
     
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder().title( "API Teste Tecnico" ).description( "" )
-                .contact( new Contact( "Teste Tecnico HubFinteh", "http://www.cunhasoftware.com.br",
-                        "leandromcunha@gmail.com" ) )
+                .contact( new Contact( "Teste Tecnico - Transações com Cartão Pré-pago",
+                        "http://www.cunhasoftware.com.br", "leandromcunha@gmail.com" ) )
                 .license( "Privado" ).licenseUrl( "http://www.cunhasoftware.com.br" ).version( "1.0.0" ).build();
     }
 }
