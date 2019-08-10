@@ -1,0 +1,5 @@
+insert into tb_card values ( 1 , 10000.00 , '1000023412341231' )
+insert into tb_card values ( 2 , 10000.00 , '1000023412341232' )
+insert into tb_card values ( 3 , 10000.00 , '1000023412341233' )
+insert into tb_card values ( 4 , 10000.00 , '1000023412341234' )
+insert into tb_card values ( 5 , 10000.00 , '1234567890123456' )

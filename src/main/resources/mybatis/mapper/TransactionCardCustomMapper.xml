@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="br.com.cunha.transacaolimite.repository.custom.TransactionCardCustomRepository">
+
+	<resultMap type="br.com.cunha.transacaolimite.services.dto.TransactioCardDTO" id="transactioCardMap">
+		<id column="id_card" property="idCard" />
+		<result column="nu_card" property="nuCard" />
+		<result column="available_amount" property="availableAmount" />
+		<result column="vl_limit" property="available" />
+
+		<collection property="transactions"
+		            column="id_trans_card"
+		            notNullColumn="id_trans_card"
+		            javaType="ArrayList"
+		            ofType="br.com.cunha.transacaolimite.services.dto.TransactionDTO"
+        	        resultMap="transactioCardDetailMap" />
+	</resultMap>
+
+	<resultMap type="br.com.cunha.transacaolimite.services.dto.TransactionDTO" id="transactioCardDetailMap">
+		<id column="id_trans_card" property="idTransCard" />
+		<result column="vl_amount" property="amount" />
+		<result column="dh_trans"  property="date" />
+		<result column="cd_author" property="authorizationCode" />
+	</resultMap>
+
+	<select id="transactionCardLoad" resultMap="transactioCardMap" parameterType="map">
+          SELECT T.VL_LIMIT - TOTAL_AMOUNT AVAILABLE_AMOUNT,
+                 T.VL_AMOUNT,
+                 T.VL_LIMIT,
+                 T.DH_TRANS,
+                 T.CD_AUTHOR,
+                 T.NU_CARD,
+                 T.ID_CARD,
+                 T.ID_TRANS_CARD
+            FROM ( SELECT COALESCE ( SUM( TC.VL_AMOUNT ) OVER (PARTITION BY TC.ID_CARD ORDER BY TC.ID_CARD), 0 ) TOTAL_AMOUNT,
+                          C.ID_CARD,
+                          C.NU_CARD,
+                          TC.ID_TRANS_CARD,
+                          COALESCE ( TC.VL_AMOUNT, 0) VL_AMOUNT,
+                          COALESCE ( C.VL_LIMIT,   0) VL_LIMIT,
+                          TC.DH_TRANS,
+                          TC.CD_AUTHOR
+                     FROM TB_CARD C
+          LEFT OUTER JOIN TB_TRANS_CARD TC ON (C.ID_CARD = TC.ID_CARD )
+                 ORDER BY TC.ID_CARD,TC.DH_TRANS DESC
+          ) T ORDER BY T.ID_CARD , T.DH_TRANS DESC
+	</select>
+
+	<select id="transactionCardByNuCard" resultMap="transactioCardMap" parameterType="map">
+          SELECT T.VL_LIMIT - TOTAL_AMOUNT AVAILABLE_AMOUNT,
+                 T.VL_AMOUNT,
+                 T.VL_LIMIT,
+                 T.DH_TRANS,
+                 T.CD_AUTHOR,
+                 T.NU_CARD,
+                 T.ID_CARD,
+                 T.ID_TRANS_CARD
+            FROM ( SELECT COALESCE ( SUM( TC.VL_AMOUNT ) OVER (PARTITION BY TC.ID_CARD ORDER BY TC.ID_CARD), 0 ) TOTAL_AMOUNT,
+                          C.ID_CARD,
+                          C.NU_CARD,
+                          TC.ID_TRANS_CARD,
+                          COALESCE ( TC.VL_AMOUNT, 0) VL_AMOUNT,
+                          COALESCE ( C.VL_LIMIT,   0) VL_LIMIT,
+                          TC.DH_TRANS,
+                          TC.CD_AUTHOR
+                     FROM TB_CARD C
+          LEFT OUTER JOIN TB_TRANS_CARD TC ON (C.ID_CARD = TC.ID_CARD )
+                    WHERE C.NU_CARD = #{nuCard}
+                 ORDER BY TC.ID_CARD,TC.DH_TRANS DESC
+          ) T ORDER BY T.ID_CARD , T.DH_TRANS DESC
+	</select>
+</mapper>
