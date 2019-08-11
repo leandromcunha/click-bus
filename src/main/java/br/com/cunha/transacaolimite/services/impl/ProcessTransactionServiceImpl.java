@@ -6,6 +6,7 @@
 package br.com.cunha.transacaolimite.services.impl;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -156,10 +157,18 @@ public class ProcessTransactionServiceImpl implements ProcessTransactionService 
         transactionDTO.setAmount( operationCardDTO.getAmount() );
         
         transactionDTO.setDate( new Date() );
-        // transactionDTO.setIdTransCard( 0L );
         transaction.setAvailableAmount( transaction.getAvailableAmount().subtract( transactionDTO.getAmount() ) );
         
-        transactionList.add( 0, transactionDTO );
+        transactionList.add( transactionDTO );
+        
+        final Comparator<TransactionDTO> comparator = new Comparator<TransactionDTO>() {
+            @Override
+            public int compare( final TransactionDTO o1, final TransactionDTO o2 ) {
+                return o2.getDate().compareTo( o1.getDate() );
+            }
+        };
+        
+        transactionList.sort( comparator );
         
         final int left = transactionList.size() > this.properties.getMaxTransactionDetail()
                 ? this.properties.getMaxTransactionDetail()
